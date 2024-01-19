@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const [firstValue, setFirstValue] = useState(1);
@@ -11,17 +11,27 @@ export default function Home() {
   const [score, setScore] = useState(0);
   const [count, setCount] = useState(0);
   const [startGame, setStartGame] = useState(false);
-  const maximumNumber = 12
-
-  // Create a 2D array to keep track of which values have been used
+  const [gameTimer, setGameTimer] = useState(60); // 60 seconds
   const valueTrackerTemp: boolean[][] = [];
-  for (var i = 0; i <= maximumNumber; i++) {
-    valueTrackerTemp.push([]);
-    for (var j = 0; j <= maximumNumber; j++) {
-      valueTrackerTemp[i].push(false);
-    }
-  }
   const [valueTracker, setValueTracker] = useState(valueTrackerTemp);
+  const maximumNumber = 12;
+
+  useEffect(() => {
+    initializeValueTracker();
+  }, []);
+
+  useEffect(() => {
+    let timerId;
+    if (startGame && gameTimer > 0) {
+      timerId = setInterval(() => {
+        setGameTimer((prevTime) => prevTime - 1);
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(timerId);
+    };
+  }, [startGame, gameTimer]);
 
   const handleInputChange = (e) => {
     setUserAnswer(e.target.value);
@@ -34,9 +44,22 @@ export default function Home() {
   };
 
   const handleStartGame = () => {
+    initializeValueTracker();
     generateNewQuestion();
     setStartGame(true);
-  }
+  };
+
+  const initializeValueTracker = () => {
+    const initialValueTracker: boolean[][] = [];
+    for (var i = 0; i <= maximumNumber; i++) {
+      initialValueTracker.push([]);
+      for (var j = 0; j <= maximumNumber; j++) {
+        initialValueTracker[i].push(false);
+      }
+    }
+    setValueTracker(initialValueTracker);
+  };
+
   const checkAnswer = () => {
     const product = firstValue * secondValue;
     const userEnteredValue = parseInt(userAnswer, 10);
@@ -53,8 +76,10 @@ export default function Home() {
   };
 
   const generateNewQuestion = () => {
-    if (count >= (maximumNumber + 1) * (maximumNumber + 1)) {
-      alert(`You've finished all the questions! You scored ${score}/${count}`);
+    if (count >= (maximumNumber + 1) * (maximumNumber + 1) || gameTimer <= 0) {
+      alert(`Game Over! You scored ${score}/${count}`);
+      setGameTimer(60); // Reset the timer to 60 seconds
+      setStartGame(false);
       return;
     }
 
@@ -63,7 +88,7 @@ export default function Home() {
     var newSecondValue = Math.floor(Math.random() * (maximumNumber + 1));
 
     var used = true;
-  
+
     while (used) {
       if (valueTracker[newFirstValue][newSecondValue] == false) {
         used = false;
@@ -83,33 +108,42 @@ export default function Home() {
     setUserAnswer("");
     setIsCorrect(false);
     setJustStarted(true);
-  }
-  ;
+  };
+
+  const handleEndGame = () => {
+    setGameTimer(60); // Reset the timer to 60 seconds
+    setStartGame(false);
+    setCount(0);
+    setScore(0);
+  };
 
   return (
     <main>
       {startGame ? (
-      <div>
-      <p>Score: {score}/{count}</p>
-      <p>
-        {firstValue} x {secondValue} =
-      </p>
-      <input
-        type="text"
-        value={userAnswer}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        placeholder="Enter your answer"
-      />
-      <button onClick={generateNewQuestion}>Next Question</button>
-      {!justStarted && (
-        <p>
-          {isCorrect
-            ? `Correct!`
-            : `Incorrect. It's ${firstValue * secondValue}.`}
-        </p>
+        <div>
+          <p>
+            Score: {score}/{count}
+          </p>
+          <p>Time remaining: {gameTimer} seconds</p>
+          <p>
+            {firstValue} x {secondValue} =
+          </p>
+          <input
+            type="text"
+            value={userAnswer}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Enter your answer"
+          />
+          <button onClick={generateNewQuestion}>Next Question</button>
+          {!justStarted && (
+            <p>
+              {isCorrect
+                ? `Correct!`
+                : `Incorrect. It's ${firstValue * secondValue}.`}
+            </p>
           )}
-      </div>
+        </div>
       ) : (
         <button onClick={handleStartGame}>Start Game</button>
       )}
