@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, SetStateAction } from "react";
-import { GameMode } from "../../utils/enums/gameMode";
+import { GameMode } from '../../utils/enums/gameMode';
 
 export default function Home() {
   const [firstValue, setFirstValue] = useState(1);
@@ -180,7 +180,7 @@ export default function Home() {
       ) : (
         <div className="flex flex-col items-center">
           <p className="text-lg mb-4">
-            Select the game mode you want to play below:
+            Choose game mode:
           </p>
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
