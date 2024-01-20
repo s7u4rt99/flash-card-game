@@ -1,6 +1,6 @@
 # Flash Card Game
 
-This Flash Card Game allows you to practice your Addition, Subtraction, Multiplication and Division!
+This Flash Card Game allows you to practice your Addition, Subtraction, Multiplication and Division! Play [here](www.flashcardgame.stuartlong.org/)!
 
 ## About The Game
 
