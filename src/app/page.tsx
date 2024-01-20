@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 import { GameMode } from "../../utils/enums/gameMode";
 
 export default function Home() {
@@ -41,11 +41,11 @@ export default function Home() {
     };
   }, [startGame, gameTimer]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: { target: { value: SetStateAction<string>; }; }) => {
     setUserAnswer(e.target.value);
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: { key: string; }) => {
     if (e.key === "Enter") {
       checkAnswer();
     }
