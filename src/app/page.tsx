@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, SetStateAction } from "react";
-import { GameMode } from '../../utils/enums/gameMode';
+import { GameMode } from "../../utils/enums/gameMode";
 
 export default function Home() {
   const [firstValue, setFirstValue] = useState(1);
@@ -41,11 +41,13 @@ export default function Home() {
     };
   }, [startGame, gameTimer]);
 
-  const handleInputChange = (e: { target: { value: SetStateAction<string>; }; }) => {
+  const handleInputChange = (e: {
+    target: { value: SetStateAction<string> };
+  }) => {
     setUserAnswer(e.target.value);
   };
 
-  const handleKeyDown = (e: { key: string; }) => {
+  const handleKeyDown = (e: { key: string }) => {
     if (e.key === "Enter") {
       checkAnswer();
     }
@@ -179,29 +181,27 @@ export default function Home() {
         </div>
       ) : (
         <div className="flex flex-col items-center">
-          <p className="text-lg mb-4">
-            Choose game mode:
-          </p>
+          <p className="text-lg mb-4">Select a game mode:</p>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+            className="bg-blue-500 text-white px-4 py-2 rounded mb-2 w-full"
             onClick={() => handleStartGame(GameMode.Addition)}
           >
             Addition
           </button>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+            className="bg-blue-500 text-white px-4 py-2 rounded mb-2 w-full"
             onClick={() => handleStartGame(GameMode.Subtraction)}
           >
             Subtraction
           </button>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+            className="bg-blue-500 text-white px-4 py-2 rounded mb-2 w-full"
             onClick={() => handleStartGame(GameMode.Multiplication)}
           >
             Multiplication
           </button>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+            className="bg-blue-500 text-white px-4 py-2 rounded mb-2 w-full"
             onClick={() => handleStartGame(GameMode.Division)}
           >
             Division
