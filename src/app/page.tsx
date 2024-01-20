@@ -12,7 +12,7 @@ export default function Home() {
   const [score, setScore] = useState(0);
   const [count, setCount] = useState(0);
   const [startGame, setStartGame] = useState(false);
-  const gameTime = 10;
+  const gameTime = 60;
   const [gameTimer, setGameTimer] = useState(gameTime);
   const [gameMode, setGameMode] = useState(GameMode.Multiplication);
   const [answer, setAnswer] = useState(0);
@@ -133,7 +133,7 @@ export default function Home() {
     } else if (mode === GameMode.Subtraction) {
       setAnswer(newFirstValue - newSecondValue);
     } else if (mode === GameMode.Division) {
-      setAnswer(newFirstValue / newSecondValue);
+      setAnswer(parseFloat((newFirstValue / newSecondValue).toFixed(2)));
     } else {
       // assume everything else is multiplication
       setAnswer(newFirstValue * newSecondValue);
@@ -141,14 +141,15 @@ export default function Home() {
   };
 
   return (
-    <main>
+    <main className="flex flex-col items-center space-y-4 p-4">
+      <p className="text-lg font-bold mb-4">Flash Card Game</p>
       {startGame ? (
-        <div>
-          <p>
+        <div className="flex flex-col items-center">
+          <p className="text-xl mb-2">
             Score: {score}/{count}
           </p>
-          <p>Time remaining: {gameTimer} seconds</p>
-          <p>
+          <p className="text-xl mb-2">Time remaining: {gameTimer} seconds</p>
+          <p className="text-3xl mb-4">
             {firstValue} {gameMode} {secondValue} =
           </p>
           <input
@@ -156,26 +157,53 @@ export default function Home() {
             value={userAnswer}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
+            className="border p-2 rounded mb-2"
             placeholder="Enter your answer"
           />
-          <button onClick={generateNewQuestion}>Next Question</button>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+            onClick={generateNewQuestion}
+          >
+            Next Question
+          </button>
+          <p>{gameMode === GameMode.Division ? "Use 2 decimal places" : ""}</p>
           {!justStarted && (
-            <p>{isCorrect ? `Correct!` : `Incorrect. It's ${answer}.`}</p>
+            <p
+              className={`text-lg mt-2 ${
+                isCorrect ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {isCorrect ? "Correct!" : `Incorrect. It's ${answer}.`}
+            </p>
           )}
         </div>
       ) : (
         <div className="flex flex-col items-center">
-          <p>Select the game mode you want to play below:</p>
-          <button onClick={() => handleStartGame(GameMode.Addition)}>
+          <p className="text-lg mb-4">
+            Select the game mode you want to play below:
+          </p>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+            onClick={() => handleStartGame(GameMode.Addition)}
+          >
             Addition
           </button>
-          <button onClick={() => handleStartGame(GameMode.Subtraction)}>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+            onClick={() => handleStartGame(GameMode.Subtraction)}
+          >
             Subtraction
           </button>
-          <button onClick={() => handleStartGame(GameMode.Multiplication)}>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+            onClick={() => handleStartGame(GameMode.Multiplication)}
+          >
             Multiplication
           </button>
-          <button onClick={() => handleStartGame(GameMode.Division)}>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+            onClick={() => handleStartGame(GameMode.Division)}
+          >
             Division
           </button>
         </div>
