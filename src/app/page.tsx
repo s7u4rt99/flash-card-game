@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { GameMode } from "../../utils/enums/gameMode";
 
 export default function Home() {
   const [firstValue, setFirstValue] = useState(1);
@@ -11,28 +12,27 @@ export default function Home() {
   const [score, setScore] = useState(0);
   const [count, setCount] = useState(0);
   const [startGame, setStartGame] = useState(false);
-  const [gameTimer, setGameTimer] = useState(60);
-  const valueTrackerTemp: boolean[][] = [];
-  const [valueTracker, setValueTracker] = useState(valueTrackerTemp);
+  const gameTime = 10;
+  const [gameTimer, setGameTimer] = useState(gameTime);
+  const [gameMode, setGameMode] = useState(GameMode.Multiplication);
+  const [answer, setAnswer] = useState(0);
+  const [valueTracker, setValueTracker] = useState<boolean[][]>([]);
   const maximumNumber = 12;
 
   useEffect(() => {
     initializeValueTracker();
-  }, []);
+  }, [startGame]);
 
+  // stopwatch timer code
   useEffect(() => {
     let timerId: NodeJS.Timeout;
     if (startGame) {
-      console.log("Timer Started")
       timerId = setInterval(() => {
-        console.log("Timer Tick")
         if (gameTimer <= 0) {
-          handleEndGame();
           clearInterval(timerId);
-          console.log("Game Over")
           return;
         }
-        setGameTimer(prevGameTimer => prevGameTimer - 1);
+        setGameTimer((prevGameTimer) => prevGameTimer - 1);
       }, 1000);
     }
 
@@ -51,41 +51,59 @@ export default function Home() {
     }
   };
 
-  const handleStartGame = () => {
+  const handleStartGame = (gameMode: GameMode) => {
+    setGameMode(gameMode);
+    setCount(0);
+    setScore(0);
     initializeValueTracker();
-    generateNewQuestion();
+    generateNewQuestion(gameMode);
     setStartGame(true);
   };
 
+  const handleEndGame = (finalScore: number = score) => {
+    alert(`Game Over! You scored ${finalScore}/${count}`);
+    setGameTimer(gameTime);
+    setStartGame(false);
+    setCount(0);
+    setScore(0);
+  };
+
+  // uses an array of arrays of booleans to check whether the pair of numbers has been used before
   const initializeValueTracker = () => {
     const initialValueTracker: boolean[][] = [];
+    setValueTracker(initialValueTracker);
+
     for (var i = 0; i <= maximumNumber; i++) {
       initialValueTracker.push([]);
       for (var j = 0; j <= maximumNumber; j++) {
         initialValueTracker[i].push(false);
       }
     }
-    setValueTracker(initialValueTracker);
   };
 
   const checkAnswer = () => {
-    const product = firstValue * secondValue;
-    const userEnteredValue = parseInt(userAnswer, 10);
-
+    const userEnteredValue = parseFloat(userAnswer);
     setJustStarted(false);
-    if (!isNaN(userEnteredValue) && userEnteredValue === product) {
+    let newScore = score;
+    if (!isNaN(userEnteredValue) && userEnteredValue === answer) {
       setIsCorrect(true);
-      setScore(score + 1);
+      newScore = score + 1;
+      setScore(newScore);
     } else {
       setIsCorrect(false);
-      setScore(Math.max(score - 1, 0));
+      newScore = Math.max(score - 1, 0);
+      setScore(newScore);
     }
-    setTimeout(generateNewQuestion, 500);
+
+    setTimeout(() => generateNewQuestion(undefined, newScore), 500);
   };
 
-  const generateNewQuestion = () => {
+  const generateNewQuestion = (
+    mode: GameMode = gameMode,
+    currentScore: number = score
+  ) => {
     if (count >= (maximumNumber + 1) * (maximumNumber + 1) || gameTimer <= 0) {
-      handleEndGame();
+      handleEndGame(currentScore);
       return;
     }
 
@@ -93,12 +111,10 @@ export default function Home() {
     var newSecondValue = Math.floor(Math.random() * (maximumNumber + 1));
 
     var used = true;
-
     while (used) {
       if (valueTracker[newFirstValue][newSecondValue] == false) {
         used = false;
         valueTracker[newFirstValue][newSecondValue] = true;
-        setValueTracker(valueTracker);
       } else {
         newFirstValue = Math.floor(Math.random() * (maximumNumber + 1));
         newSecondValue = Math.floor(Math.random() * (maximumNumber + 1));
@@ -107,20 +123,21 @@ export default function Home() {
 
     setCount(count + 1);
 
-    // Reset states
     setFirstValue(newFirstValue);
     setSecondValue(newSecondValue);
     setUserAnswer("");
     setIsCorrect(false);
     setJustStarted(true);
-  };
-
-  const handleEndGame = () => {
-    alert(`Game Over! You scored ${score}/${count}`);
-    setGameTimer(60);
-    setStartGame(false);
-    setCount(0);
-    setScore(0);
+    if (mode === GameMode.Addition) {
+      setAnswer(newFirstValue + newSecondValue);
+    } else if (mode === GameMode.Subtraction) {
+      setAnswer(newFirstValue - newSecondValue);
+    } else if (mode === GameMode.Division) {
+      setAnswer(newFirstValue / newSecondValue);
+    } else {
+      // assume everything else is multiplication
+      setAnswer(newFirstValue * newSecondValue);
+    }
   };
 
   return (
@@ -132,7 +149,7 @@ export default function Home() {
           </p>
           <p>Time remaining: {gameTimer} seconds</p>
           <p>
-            {firstValue} x {secondValue} =
+            {firstValue} {gameMode} {secondValue} =
           </p>
           <input
             type="text"
@@ -143,15 +160,25 @@ export default function Home() {
           />
           <button onClick={generateNewQuestion}>Next Question</button>
           {!justStarted && (
-            <p>
-              {isCorrect
-                ? `Correct!`
-                : `Incorrect. It's ${firstValue * secondValue}.`}
-            </p>
+            <p>{isCorrect ? `Correct!` : `Incorrect. It's ${answer}.`}</p>
           )}
         </div>
       ) : (
-        <button onClick={handleStartGame}>Start Game</button>
+        <div className="flex flex-col items-center">
+          <p>Select the game mode you want to play below:</p>
+          <button onClick={() => handleStartGame(GameMode.Addition)}>
+            Addition
+          </button>
+          <button onClick={() => handleStartGame(GameMode.Subtraction)}>
+            Subtraction
+          </button>
+          <button onClick={() => handleStartGame(GameMode.Multiplication)}>
+            Multiplication
+          </button>
+          <button onClick={() => handleStartGame(GameMode.Division)}>
+            Division
+          </button>
+        </div>
       )}
     </main>
   );
