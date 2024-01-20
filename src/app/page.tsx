@@ -29,6 +29,7 @@ export default function Home() {
     if (startGame) {
       timerId = setInterval(() => {
         if (gameTimer <= 0) {
+          handleEndGame();
           clearInterval(timerId);
           return;
         }
@@ -91,13 +92,12 @@ export default function Home() {
       setIsCorrect(true);
       newScore = score + 1;
       setScore(newScore);
+      setTimeout(() => generateNewQuestion(undefined, newScore), 500);
     } else {
       setIsCorrect(false);
       newScore = Math.max(score - 1, 0);
       setScore(newScore);
     }
-
-    setTimeout(() => generateNewQuestion(undefined, newScore), 500);
   };
 
   const generateNewQuestion = (
@@ -166,7 +166,7 @@ export default function Home() {
             className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
             onClick={() => generateNewQuestion()}
           >
-            Next Question
+            Skip Question
           </button>
           <p>{gameMode === GameMode.Division ? "Use 2 decimal places" : ""}</p>
           {!justStarted && (
@@ -175,7 +175,7 @@ export default function Home() {
                 isCorrect ? "text-green-500" : "text-red-500"
               }`}
             >
-              {isCorrect ? "Correct!" : `Incorrect. It's ${answer}.`}
+              {isCorrect ? "Correct!" : "Incorrect!"}
             </p>
           )}
         </div>
