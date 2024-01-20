@@ -144,13 +144,13 @@ export default function Home() {
 
   return (
     <main className="flex flex-col items-center space-y-4 p-4">
-      <p className="text-lg font-bold mb-4">Flash Card Game</p>
+      <p className="text-5xl font-bold mb-4">Flash Card Game</p>
       {startGame ? (
         <div className="flex flex-col items-center">
-          <p className="text-xl mb-2">
+          <p className="text-2xl mb-3">
             Score: {score}/{count}
           </p>
-          <p className="text-xl mb-2">Time remaining: {gameTimer} seconds</p>
+          <p className="text-xl mb-5">Time remaining: {gameTimer} seconds</p>
           <p className="text-3xl mb-4">
             {firstValue} {gameMode} {secondValue} =
           </p>
@@ -159,16 +159,18 @@ export default function Home() {
             value={userAnswer}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
-            className="border p-2 rounded mb-2"
+            className="border p-2 rounded mb-3"
             placeholder="Enter your answer"
           />
+          <p className="text-lg mb-3">
+            {gameMode === GameMode.Division ? "Note: Use up to 2 decimal places" : ""}
+          </p>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mb-2"
+            className="bg-red-500 text-white px-4 py-2 rounded mb-2"
             onClick={() => generateNewQuestion()}
           >
             Skip Question
           </button>
-          <p>{gameMode === GameMode.Division ? "Use 2 decimal places" : ""}</p>
           {!justStarted && (
             <p
               className={`text-lg mt-2 ${
@@ -181,27 +183,27 @@ export default function Home() {
         </div>
       ) : (
         <div className="flex flex-col items-center">
-          <p className="text-lg mb-4">Select a game mode:</p>
+          <p className="text-lg mb-7">Select a game mode:</p>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mb-2 w-full"
+            className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded mb-2 w-full"
             onClick={() => handleStartGame(GameMode.Addition)}
           >
             Addition
           </button>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mb-2 w-full"
+            className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded mb-2 w-full"
             onClick={() => handleStartGame(GameMode.Subtraction)}
           >
             Subtraction
           </button>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mb-2 w-full"
+            className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded mb-2 w-full"
             onClick={() => handleStartGame(GameMode.Multiplication)}
           >
             Multiplication
           </button>
           <button
-            className="bg-blue-500 text-white px-4 py-2 rounded mb-2 w-full"
+            className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded mb-2 w-full"
             onClick={() => handleStartGame(GameMode.Division)}
           >
             Division
