@@ -11,7 +11,7 @@ export default function Home() {
   const [score, setScore] = useState(0);
   const [count, setCount] = useState(0);
   const [startGame, setStartGame] = useState(false);
-  const [gameTimer, setGameTimer] = useState(60); // 60 seconds
+  const [gameTimer, setGameTimer] = useState(60);
   const valueTrackerTemp: boolean[][] = [];
   const [valueTracker, setValueTracker] = useState(valueTrackerTemp);
   const maximumNumber = 12;
@@ -21,10 +21,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    let timerId;
-    if (startGame && gameTimer > 0) {
+    let timerId: NodeJS.Timeout;
+    if (startGame) {
+      console.log("Timer Started")
       timerId = setInterval(() => {
-        setGameTimer((prevTime) => prevTime - 1);
+        console.log("Timer Tick")
+        if (gameTimer <= 0) {
+          handleEndGame();
+          clearInterval(timerId);
+          console.log("Game Over")
+          return;
+        }
+        setGameTimer(prevGameTimer => prevGameTimer - 1);
       }, 1000);
     }
 
@@ -77,13 +85,10 @@ export default function Home() {
 
   const generateNewQuestion = () => {
     if (count >= (maximumNumber + 1) * (maximumNumber + 1) || gameTimer <= 0) {
-      alert(`Game Over! You scored ${score}/${count}`);
-      setGameTimer(60); // Reset the timer to 60 seconds
-      setStartGame(false);
+      handleEndGame();
       return;
     }
 
-    // Generate new random values for the flash card
     var newFirstValue = Math.floor(Math.random() * (maximumNumber + 1));
     var newSecondValue = Math.floor(Math.random() * (maximumNumber + 1));
 
@@ -111,7 +116,8 @@ export default function Home() {
   };
 
   const handleEndGame = () => {
-    setGameTimer(60); // Reset the timer to 60 seconds
+    alert(`Game Over! You scored ${score}/${count}`);
+    setGameTimer(60);
     setStartGame(false);
     setCount(0);
     setScore(0);
